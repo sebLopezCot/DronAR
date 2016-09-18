@@ -19,41 +19,40 @@ public class GoogleMap : MonoBehaviour
     public MapType mapType;
     public int size = 512;
     public bool doubleResolution = false;
-    public GoogleMapMarker[] markers;
+    //public GoogleMapMarker[] markers;
     public GoogleMapPath[] paths;
 
     void Start()
     {
         mapType = GoogleMap.MapType.Hybrid;
-        markers = new GoogleMapMarker[3];
-        markers[0] = new GoogleMapMarker();
-        markers[0].locations = new GoogleMapLocation[1];
-        markers[0].locations[0] = new GoogleMapLocation();
-        markers[0].locations[0].address = "";
-        markers[0].locations[0].latitude = 40.7127837f;
-        markers[0].locations[0].longitude = -74.0059413f;
-        markers[0].size = GoogleMapMarker.GoogleMapMarkerSize.Mid;
-        markers[0].color = GoogleMapColor.red;
-        markers[0].label = "begin";
-        markers[1] = new GoogleMapMarker();
-        markers[1].locations = new GoogleMapLocation[1];
-        markers[1].locations[0] = new GoogleMapLocation();
-        markers[1].locations[0].address = "";
-        markers[1].locations[0].latitude = 40.7327837f;
-        markers[1].locations[0].longitude = -74.0059413f;
-        markers[1].size = GoogleMapMarker.GoogleMapMarkerSize.Mid;
-        markers[1].color = GoogleMapColor.red;
-        markers[1].label = "end";
+        PlaneState.getMarkers()[0] = new GoogleMapMarker();
+        PlaneState.getMarkers()[0].locations = new GoogleMapLocation[1];
+        PlaneState.getMarkers()[0].locations[0] = new GoogleMapLocation();
+        PlaneState.getMarkers()[0].locations[0].address = "";
+        PlaneState.getMarkers()[0].locations[0].latitude = 40.7127837f;
+        PlaneState.getMarkers()[0].locations[0].longitude = -74.0059413f;
+        PlaneState.getMarkers()[0].size = GoogleMapMarker.GoogleMapMarkerSize.Mid;
+        PlaneState.getMarkers()[0].color = GoogleMapColor.red;
+        PlaneState.getMarkers()[0].label = "begin";
+        PlaneState.getMarkers()[1] = new GoogleMapMarker();
+        PlaneState.getMarkers()[1].locations = new GoogleMapLocation[1];
+        PlaneState.getMarkers()[1].locations[0] = new GoogleMapLocation();
+        PlaneState.getMarkers()[1].locations[0].address = "";
+        PlaneState.getMarkers()[1].locations[0].latitude = 40.7327837f;
+        PlaneState.getMarkers()[1].locations[0].longitude = -74.0059413f;
+        PlaneState.getMarkers()[1].size = GoogleMapMarker.GoogleMapMarkerSize.Mid;
+        PlaneState.getMarkers()[1].color = GoogleMapColor.red;
+        PlaneState.getMarkers()[1].label = "end";
 
-        markers[2] = new GoogleMapMarker();
-        markers[2].locations = new GoogleMapLocation[1];
-        markers[2].locations[0] = new GoogleMapLocation();
-        markers[2].locations[0].address = "";
-        markers[2].locations[0].latitude = 40.7227837f;
-        markers[2].locations[0].longitude = -74.0059413f;
-        markers[2].size = GoogleMapMarker.GoogleMapMarkerSize.Mid;
-        markers[2].color = GoogleMapColor.blue;
-        markers[2].label = "drone";
+        PlaneState.getMarkers()[2] = new GoogleMapMarker();
+        PlaneState.getMarkers()[2].locations = new GoogleMapLocation[1];
+        PlaneState.getMarkers()[2].locations[0] = new GoogleMapLocation();
+        PlaneState.getMarkers()[2].locations[0].address = "";
+        PlaneState.getMarkers()[2].locations[0].latitude = 40.7227837f;
+        PlaneState.getMarkers()[2].locations[0].longitude = -74.0059413f;
+        PlaneState.getMarkers()[2].size = GoogleMapMarker.GoogleMapMarkerSize.Mid;
+        PlaneState.getMarkers()[2].color = GoogleMapColor.blue;
+        PlaneState.getMarkers()[2].label = "drone";
 
         paths = new GoogleMapPath[1];
         paths[0] = new GoogleMapPath();
@@ -61,14 +60,14 @@ public class GoogleMap : MonoBehaviour
         paths[0].fill = true;
         paths[0].fillColor = GoogleMapColor.blue;
         paths[0].locations = new GoogleMapLocation[2];
-        paths[0].locations[0] = markers[0].locations[0];
-        paths[0].locations[1] = markers[2].locations[0];
+        paths[0].locations[0] = PlaneState.getMarkers()[0].locations[0];
+        paths[0].locations[1] = PlaneState.getMarkers()[2].locations[0];
 
         paths[0] = new GoogleMapPath();
         paths[0].color = GoogleMapColor.black;
         paths[0].locations = new GoogleMapLocation[2];
-        paths[0].locations[0] = markers[2].locations[0];
-        paths[0].locations[1] = markers[1].locations[0];
+        paths[0].locations[0] = PlaneState.getMarkers()[2].locations[0];
+        paths[0].locations[1] = PlaneState.getMarkers()[1].locations[0];
 
 
         if (loadOnStart) Refresh();
@@ -81,15 +80,15 @@ public class GoogleMap : MonoBehaviour
         while (progress < 1.0)
         {
             progress += rate;
-            markers[2].locations[0].latitude = progress * markers[0].locations[0].latitude + (1 - progress) * markers[1].locations[0].latitude;
-            markers[2].locations[0].longitude = progress * markers[0].locations[0].longitude + (1 - progress) * markers[1].locations[0].longitude;
+            PlaneState.getMarkers()[2].locations[0].latitude = progress * PlaneState.getMarkers()[0].locations[0].latitude + (1 - progress) * PlaneState.getMarkers()[1].locations[0].latitude;
+            PlaneState.getMarkers()[2].locations[0].longitude = progress * PlaneState.getMarkers()[0].locations[0].longitude + (1 - progress) * PlaneState.getMarkers()[1].locations[0].longitude;
             for (int i = 0; i < frameDelay; ++i) yield return 0;
         }
     }
 
     public void Refresh()
     {
-        if (autoLocateCenter && (markers.Length == 0 && paths.Length == 0))
+        if (autoLocateCenter && (PlaneState.getMarkers().Length == 0 && paths.Length == 0))
         {
             Debug.LogError("Auto Center will only work if paths or markers are used.");
         }
@@ -98,6 +97,7 @@ public class GoogleMap : MonoBehaviour
 
     IEnumerator _Refresh()
     {
+
         var url = "http://maps.googleapis.com/maps/api/staticmap";
         var qs = "";
         if (!autoLocateCenter)
@@ -120,7 +120,7 @@ public class GoogleMap : MonoBehaviour
 #endif
         qs += "&sensor=" + (usingSensor ? "true" : "false");
 
-        foreach (var i in markers)
+        foreach (var i in PlaneState.getMarkers())
         {
             qs += "&markers=" + string.Format("size:{0}|color:{1}|label:{2}", i.size.ToString().ToLower(), i.color, i.label);
             foreach (var loc in i.locations)
@@ -145,7 +145,7 @@ public class GoogleMap : MonoBehaviour
             }
         }
 
-        Debug.Log(qs);
+        //Debug.Log(qs);
         var req = new WWW(url + "?" + qs);
         yield return req;
         GetComponent<Renderer>().material.mainTexture = req.texture;
