@@ -3,6 +3,8 @@ using System.Collections;
 
 public class GoogleMap : MonoBehaviour
 {
+
+    private int delay = 0;
     public enum MapType
     {
         RoadMap,
@@ -70,6 +72,19 @@ public class GoogleMap : MonoBehaviour
 
 
         if (loadOnStart) Refresh();
+
+        StartCoroutine(_MoveDrone(0.01f, 0.2f, 10));
+    }
+
+    IEnumerator _MoveDrone(float rate, float progress, int frameDelay)
+    {
+        while (progress < 1.0)
+        {
+            progress += rate;
+            markers[2].locations[0].latitude = progress * markers[0].locations[0].latitude + (1 - progress) * markers[1].locations[0].latitude;
+            markers[2].locations[0].longitude = progress * markers[0].locations[0].longitude + (1 - progress) * markers[1].locations[0].longitude;
+            for (int i = 0; i < frameDelay; ++i) yield return 0;
+        }
     }
 
     public void Refresh()
@@ -138,7 +153,12 @@ public class GoogleMap : MonoBehaviour
 
     void Update()
     {
-
+        delay++;
+        if (delay == 25)
+        {
+            Refresh();
+            delay = 0;
+        }
     }
 }
 
