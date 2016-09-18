@@ -49,21 +49,6 @@ public class GrapherCUSTOM : MonoBehaviour {
 	}
 
 	private static float Custom (string eq, Vector3 p, float t) {
-		if (eq.Length < 2) {
-			return 0;
-		}
-
-		if(eq.Substring(0, 2).ToLower().Equals("y=")) {
-			string equation = eq.Substring (2);
-
-			ExpressionSolver solver = new ExpressionSolver();
-			solver.SetGlobalVariable("x",p.x);
-			solver.SetGlobalVariable("z",p.z);
-			solver.SetGlobalVariable("t",t);
-			Expression value = solver.SymbolicateExpression(equation);
-			return (float)value.Evaluate ();
-		}
-
 		return 0;
 	}
 }
